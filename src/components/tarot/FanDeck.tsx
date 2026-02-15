@@ -20,10 +20,11 @@ const shuffleConfigs: Record<ShuffleType, { name: string; nameEn: string; descri
   hindu: { name: '印度洗牌', nameEn: 'Hindu Shuffle', description: '从牌堆底部一张张滑落的洗牌方式', duration: 3200, maxDelay: 1.2 }
 };
 
-function CardBack({ size = 'normal', noAnimation = false }: { size?: 'normal' | 'small'; noAnimation?: boolean }) {
+function CardBack({ size = 'normal', noAnimation = false }: { size?: 'normal' | 'medium' | 'small'; noAnimation?: boolean }) {
   const isSmall = size === 'small';
-  const width = isSmall ? '70px' : '120px';
-  const height = isSmall ? '105px' : '180px';
+  const isMedium = size === 'medium';
+  const width = isSmall ? '70px' : isMedium ? '90px' : '120px';
+  const height = isSmall ? '105px' : isMedium ? '135px' : '180px';
   const outerRingClass = noAnimation ? '' : 'animate-spin-slow';
   const innerRingClass = noAnimation ? '' : 'animate-spin-reverse';
   
@@ -41,26 +42,26 @@ function CardBack({ size = 'normal', noAnimation = false }: { size?: 'normal' | 
     >
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative">
-          <div className={`absolute -inset-4 border border-amber-400/20 rounded-full ${outerRingClass}`} />
-          <div className={`absolute -inset-6 border border-purple-400/10 rounded-full ${innerRingClass}`} />
-          <div className={`rounded-full bg-gradient-to-br from-amber-500/20 to-purple-500/20 flex items-center justify-center border border-amber-400/30 ${isSmall ? 'w-8 h-8' : 'w-12 h-12'}`}>
-            <Star className={`${isSmall ? 'w-4 h-4' : 'w-6 h-6'} text-amber-400/60`} />
+          <div className={`absolute border border-amber-400/20 rounded-full ${outerRingClass} ${isSmall ? '-inset-2' : isMedium ? '-inset-3' : '-inset-4'}`} />
+          <div className={`absolute border border-purple-400/10 rounded-full ${innerRingClass} ${isSmall ? '-inset-3' : isMedium ? '-inset-4' : '-inset-6'}`} />
+          <div className={`rounded-full bg-gradient-to-br from-amber-500/20 to-purple-500/20 flex items-center justify-center border border-amber-400/30 ${isSmall ? 'w-8 h-8' : isMedium ? 'w-10 h-10' : 'w-12 h-12'}`}>
+            <Star className={`${isSmall ? 'w-4 h-4' : isMedium ? 'w-5 h-5' : 'w-6 h-6'} text-amber-400/60`} />
           </div>
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className={`absolute left-1/2 top-1/2 rounded-full bg-amber-400/40 ${isSmall ? 'w-1 h-1' : 'w-1.5 h-1.5'}`}
-              style={{ transform: `translate(-50%, -50%) rotate(${i * 45}deg) translateY(${isSmall ? '-16px' : '-24px'})` }}
+              className={`absolute left-1/2 top-1/2 rounded-full bg-amber-400/40 ${isSmall ? 'w-1 h-1' : isMedium ? 'w-1 h-1' : 'w-1.5 h-1.5'}`}
+              style={{ transform: `translate(-50%, -50%) rotate(${i * 45}deg) translateY(${isSmall ? '-16px' : isMedium ? '-20px' : '-24px'})` }}
             />
           ))}
         </div>
       </div>
 
-      <div className="absolute inset-1 border border-amber-400/20 rounded-lg pointer-events-none" />
-      <div className="absolute top-1.5 left-1.5 w-2 h-2 border-t border-l border-amber-400/40" />
-      <div className="absolute top-1.5 right-1.5 w-2 h-2 border-t border-r border-amber-400/40" />
-      <div className="absolute bottom-1.5 left-1.5 w-2 h-2 border-b border-l border-amber-400/40" />
-      <div className="absolute bottom-1.5 right-1.5 w-2 h-2 border-b border-r border-amber-400/40" />
+      <div className={`absolute border border-amber-400/20 rounded-lg pointer-events-none ${isSmall ? 'inset-1' : isMedium ? 'inset-1' : 'inset-1'}`} />
+      <div className={`absolute border-amber-400/40 ${isSmall ? 'top-1 left-1 w-1.5 h-1.5 border-t border-l' : isMedium ? 'top-1 left-1 w-2 h-2 border-t border-l' : 'top-1.5 left-1.5 w-2 h-2 border-t border-l'}`} />
+      <div className={`absolute border-amber-400/40 ${isSmall ? 'top-1 right-1 w-1.5 h-1.5 border-t border-r' : isMedium ? 'top-1 right-1 w-2 h-2 border-t border-r' : 'top-1.5 right-1.5 w-2 h-2 border-t border-r'}`} />
+      <div className={`absolute border-amber-400/40 ${isSmall ? 'bottom-1 left-1 w-1.5 h-1.5 border-b border-l' : isMedium ? 'bottom-1 left-1 w-2 h-2 border-b border-l' : 'bottom-1.5 left-1.5 w-2 h-2 border-b border-l'}`} />
+      <div className={`absolute border-amber-400/40 ${isSmall ? 'bottom-1 right-1 w-1.5 h-1.5 border-b border-r' : isMedium ? 'bottom-1 right-1 w-2 h-2 border-b border-r' : 'bottom-1.5 right-1.5 w-2 h-2 border-b border-r'}`} />
 
       <style jsx>{`
         .animate-spin-slow { animation: spin 20s linear infinite; will-change: transform; }
@@ -152,14 +153,14 @@ export default function FanDeck({ onCardSelect, selectedCount, totalCards, disab
     </div>
   );
 
-  // 桌面端扇形参数
+  // 桌面端扇形参数 - 响应式半径
   const totalAngle = 100;
   const cardCount = cards.length;
   const anglePerCard = cardCount > 1 ? totalAngle / (cardCount - 1) : 0;
-  const getCardPosition = (index: number) => {
+  const getCardPosition = (index: number, radius: number) => {
     const angle = 140 - (index % cardCount) * anglePerCard;
     const radian = (angle * Math.PI) / 180;
-    return { x: Math.cos(radian) * 1200, y: -Math.sin(radian) * 1200, rotation: 90 - angle };
+    return { x: Math.cos(radian) * radius, y: -Math.sin(radian) * radius, rotation: 90 - angle };
   };
 
   // 桌面端洗牌选择
@@ -280,18 +281,56 @@ export default function FanDeck({ onCardSelect, selectedCount, totalCards, disab
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2000px] h-[2000px] rounded-full bg-gradient-radial from-purple-900/20 via-transparent to-transparent" />
         </div>
-        <div className="absolute bottom-[-300px] left-1/2 -translate-x-1/2">
+        {/* 笔记本用 medium 卡片和较小半径 */}
+        <div className="absolute left-1/2 -translate-x-1/2 fan-deck-container xl:hidden">
           {cards.slice(0, cardCount).map((card, index) => {
             const isSelected = selectedCards.has(index);
             const isHovered = hoveredCard === index;
-            const pos = getCardPosition(index);
+            const pos = getCardPosition(index, 650);
             const animDelay = Math.min(index * 0.008, 0.6);
             return (
               <div
                 key={card.id}
                 className="absolute cursor-pointer left-0 top-0 gpu-accelerated"
                 style={{
-                  transform: showCards ? `translate3d(${pos.x}px, ${pos.y + (isSelected ? -120 : 0)}px, 0) translate(-50%, -50%) rotate(${pos.rotation}deg) scale(${isSelected ? 0.8 : isHovered ? 1.15 : 1})` : `translate3d(0px, 100px, 0) translate(-50%, -50%) scale(0.5)`,
+                  transform: showCards ? `translate3d(${pos.x}px, ${pos.y + (isSelected ? -80 : 0)}px, 0) translate(-50%, -50%) rotate(${pos.rotation}deg) scale(${isSelected ? 0.8 : isHovered ? 1.15 : 1})` : `translate3d(0px, 100px, 0) translate(-50%, -50%) scale(0.5)`,
+                  opacity: showCards ? (isSelected ? 0 : 1) : 0,
+                  zIndex: isHovered ? 1000 : isSelected ? 0 : cardCount - index,
+                  transition: showCards ? `transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${animDelay}s, opacity 0.25s ease ${animDelay}s` : 'none',
+                  willChange: showCards ? 'transform, opacity' : 'auto',
+                  backfaceVisibility: 'hidden',
+                }}
+                onClick={() => handleCardClick(card, index)}
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                <div 
+                  className="rounded-xl" 
+                  style={{ 
+                    boxShadow: isHovered ? '0 0 30px rgba(255, 215, 0, 0.6), 0 15px 40px rgba(0, 0, 0, 0.6)' : '0 6px 20px rgba(0, 0, 0, 0.4)',
+                    transition: 'box-shadow 0.2s ease',
+                    backfaceVisibility: 'hidden',
+                  }}
+                >
+                  <CardBack size="medium" noAnimation />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {/* 大屏幕用 normal 卡片和较大半径 */}
+        <div className="absolute left-1/2 -translate-x-1/2 fan-deck-container-xl hidden xl:block">
+          {cards.slice(0, cardCount).map((card, index) => {
+            const isSelected = selectedCards.has(index);
+            const isHovered = hoveredCard === index;
+            const pos = getCardPosition(index, 900);
+            const animDelay = Math.min(index * 0.008, 0.6);
+            return (
+              <div
+                key={card.id}
+                className="absolute cursor-pointer left-0 top-0 gpu-accelerated"
+                style={{
+                  transform: showCards ? `translate3d(${pos.x}px, ${pos.y + (isSelected ? -100 : 0)}px, 0) translate(-50%, -50%) rotate(${pos.rotation}deg) scale(${isSelected ? 0.8 : isHovered ? 1.15 : 1})` : `translate3d(0px, 100px, 0) translate(-50%, -50%) scale(0.5)`,
                   opacity: showCards ? (isSelected ? 0 : 1) : 0,
                   zIndex: isHovered ? 1000 : isSelected ? 0 : cardCount - index,
                   transition: showCards ? `transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${animDelay}s, opacity 0.25s ease ${animDelay}s` : 'none',
@@ -326,9 +365,9 @@ export default function FanDeck({ onCardSelect, selectedCount, totalCards, disab
         </div>
       </div>
       <style jsx>{`
-        .gpu-accelerated {
-          transform-style: preserve-3d;
-        }
+        .gpu-accelerated { transform-style: preserve-3d; }
+        .fan-deck-container { bottom: -180px; }
+        .fan-deck-container-xl { bottom: -280px; }
       `}</style>
     </>
   );

@@ -14,13 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "神秘塔罗",
-  description:
-    "一个精美的在线塔罗牌占卜应用，支持多种经典牌阵，提供专业的牌义解读。",
-  keywords: ["tarot"],
-  authors: [{ name: "神秘塔罗团队" }],
+  title: "神秘塔罗 - 在线塔罗牌占卜",
+  description: "精美的在线塔罗牌占卜应用，支持多种经典牌阵，提供专业的牌义解读。",
+  keywords: ["塔罗牌", "占卜", "塔罗", "Tarot", "神秘塔罗"],
+  authors: [{ name: "神秘塔罗" }],
   icons: {
-    icon: "/logo.png",
+    icon: "/favicon.svg",
   },
 };
 
