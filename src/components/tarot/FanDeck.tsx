@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useSyncExternalStore, useEffect } from '
 import { TarotCard } from '@/types/tarot';
 import { allTarotCards } from '@/data/tarotCards';
 import { Star } from '@/lib/icons';
+import { useTarotI18n } from '@/i18n/provider';
 
 interface FanDeckProps {
   onCardSelect: (card: TarotCard) => void;
@@ -14,10 +15,10 @@ interface FanDeckProps {
 
 type ShuffleType = 'riffle' | 'overhand' | 'hindu';
 
-const shuffleConfigs: Record<ShuffleType, { name: string; nameEn: string; description: string; duration: number; maxDelay: number }> = {
-  riffle: { name: '交错洗牌', nameEn: 'Riffle Shuffle', description: '经典交错式洗牌，牌分两半交错落下', duration: 3000, maxDelay: 1.0 },
-  overhand: { name: '过手洗牌', nameEn: 'Overhand Shuffle', description: '从一手传递到另一手的洗牌方式', duration: 2800, maxDelay: 1.6 },
-  hindu: { name: '印度洗牌', nameEn: 'Hindu Shuffle', description: '从牌堆底部一张张滑落的洗牌方式', duration: 3200, maxDelay: 1.2 }
+const shuffleConfigs: Record<ShuffleType, { duration: number; maxDelay: number }> = {
+  riffle: { duration: 3000, maxDelay: 1.0 },
+  overhand: { duration: 2800, maxDelay: 1.6 },
+  hindu: { duration: 3200, maxDelay: 1.2 }
 };
 
 function CardBack({ size = 'normal', noAnimation = false }: { size?: 'normal' | 'medium' | 'small'; noAnimation?: boolean }) {
@@ -86,6 +87,7 @@ function initializeCards(): void {
 }
 
 export default function FanDeck({ onCardSelect, selectedCount, totalCards, disabled = false }: FanDeckProps) {
+  const { messages } = useTarotI18n();
   const cards = useSyncExternalStore(subscribeToCards, getCardsSnapshot, getCardsServerSnapshot);
   const [selectedCards, setSelectedCards] = useState<Set<number>>(new Set());
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -126,7 +128,7 @@ export default function FanDeck({ onCardSelect, selectedCount, totalCards, disab
     <div className="md:hidden relative w-full h-full flex flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto py-4">
         {cards.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-amber-200/60 animate-pulse">正在加载牌库...</div>
+          <div className="flex items-center justify-center h-full text-amber-200/60 animate-pulse">{messages.fanDeck.loading}</div>
         ) : (
           <div className="grid grid-cols-4 gap-2 px-3 justify-items-center">
             {cards.map((card, index) => (
@@ -143,7 +145,7 @@ export default function FanDeck({ onCardSelect, selectedCount, totalCards, disab
         )}
       </div>
       <div className="flex-shrink-0 py-3 text-center bg-slate-900/80 backdrop-blur-sm border-t border-purple-400/20">
-        <div className="text-amber-200/80 text-sm mb-2">从牌库中选择 {totalCards} 张牌</div>
+        <div className="text-amber-200/80 text-sm mb-2">{messages.fanDeck.selectPrompt.replace('{count}', String(totalCards))}</div>
         <div className="flex items-center gap-2 justify-center">
           {Array.from({ length: totalCards }).map((_, i) => (
             <div key={i} className={`w-3 h-3 rounded-full ${i < selectedCount ? 'bg-amber-400 shadow-lg shadow-amber-400/50' : 'bg-amber-400/20 border border-amber-400/40'}`} />
@@ -173,18 +175,17 @@ export default function FanDeck({ onCardSelect, selectedCount, totalCards, disab
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)' }} />
           </div>
           <div className="text-center mb-8">
-            <h3 className="text-amber-200 text-2xl font-bold mb-2">选择洗牌方式</h3>
-            <p className="text-amber-200/60 text-sm">Choose your shuffle style</p>
+            <h3 className="text-amber-200 text-2xl font-bold mb-2">{messages.fanDeck.chooseShuffleTitle}</h3>
+            <p className="text-amber-200/60 text-sm">{messages.fanDeck.chooseShuffleSubtitle}</p>
           </div>
           <div className="flex gap-4">
             {(Object.keys(shuffleConfigs) as ShuffleType[]).map((type) => {
-              const config = shuffleConfigs[type];
+              const copy = messages.fanDeck.shuffleTypes[type];
               return (
                 <button key={type} onClick={() => startShuffle(type)} className="group relative px-6 py-5 rounded-xl border-2 border-amber-400/30 bg-gradient-to-br from-purple-900/40 to-indigo-900/40 hover:border-amber-400/60 transition-all duration-300 cursor-pointer hover:scale-105">
                   <div className="text-center">
-                    <div className="text-amber-300 text-lg font-bold mb-1">{config.name}</div>
-                    <div className="text-amber-200/40 text-xs mb-2">{config.nameEn}</div>
-                    <div className="text-amber-200/60 text-sm">{config.description}</div>
+                    <div className="text-amber-300 text-lg font-bold mb-2">{copy.name}</div>
+                    <div className="text-amber-200/60 text-sm">{copy.description}</div>
                   </div>
                 </button>
               );
@@ -233,7 +234,7 @@ export default function FanDeck({ onCardSelect, selectedCount, totalCards, disab
             })}
           </div>
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-amber-200/80 text-lg font-medium animate-pulse">
-            ✨ {shuffleConfigs[shuffleType].name}中...
+            ✨ {messages.fanDeck.shuffling.replace('{type}', messages.fanDeck.shuffleTypes[shuffleType].name)}
           </div>
           <style jsx>{`
             .gpu-accelerated { transform-style: preserve-3d; }
@@ -356,7 +357,7 @@ export default function FanDeck({ onCardSelect, selectedCount, totalCards, disab
           })}
         </div>
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center">
-          <div className="text-amber-200/80 text-lg font-medium mb-2">从78张牌库中选择 {totalCards} 张牌</div>
+          <div className="text-amber-200/80 text-lg font-medium mb-2">{messages.fanDeck.selectPrompt.replace('{count}', String(totalCards))}</div>
           <div className="flex items-center gap-2 justify-center">
             {Array.from({ length: totalCards }).map((_, i) => (
               <div key={i} className={`w-4 h-4 rounded-full ${i < selectedCount ? 'bg-amber-400 shadow-lg shadow-amber-400/50' : 'bg-amber-400/20 border border-amber-400/40'}`} />

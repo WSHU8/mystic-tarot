@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { DrawnCard, SpreadType } from '@/types/tarot';
 import TarotCardComponent from './TarotCard';
+import { useTarotI18n } from '@/i18n/provider';
 
 interface CardSpreadProps {
   spread: SpreadType;
@@ -11,6 +12,7 @@ interface CardSpreadProps {
 }
 
 export default function CardSpread({ spread, drawnCards, onAllRevealed }: CardSpreadProps) {
+  const { messages } = useTarotI18n();
   const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
 
   const handleCardClick = useCallback((index: number) => {
@@ -82,7 +84,7 @@ export default function CardSpread({ spread, drawnCards, onAllRevealed }: CardSp
         </div>
         {!allRevealed && (
           <div className="text-center mt-8">
-            <p className="text-purple-300/70 text-sm">点击卡牌翻转查看</p>
+            <p className="text-purple-300/70 text-sm">{messages.cardSpread.clickToReveal}</p>
           </div>
         )}
         <div className="flex justify-center gap-2 mt-8">
@@ -116,7 +118,7 @@ export default function CardSpread({ spread, drawnCards, onAllRevealed }: CardSp
       </div>
       {!allRevealed && (
         <div className="text-center mt-4">
-          <p className="text-purple-300/70 text-sm">点击卡牌翻转查看</p>
+          <p className="text-purple-300/70 text-sm">{messages.cardSpread.clickToReveal}</p>
         </div>
       )}
       <div className="flex justify-center gap-2 mt-4">

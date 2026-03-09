@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { TarotCard } from '@/types/tarot';
 import { iconMap, Star, ArrowDown } from '@/lib/icons';
+import { useTarotI18n } from '@/i18n/provider';
+import { getArcanaLabel, getLocalizedCard } from '@/lib/tarotLocalization';
 
 interface TarotCardComponentProps {
   card: TarotCard;
@@ -27,8 +29,10 @@ export default function TarotCardComponent({
   onReveal,
   delay = 0
 }: TarotCardComponentProps) {
+  const { locale, messages } = useTarotI18n();
   const [showCard, setShowCard] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
+  const localizedCard = useMemo(() => getLocalizedCard(card, locale), [card, locale]);
 
   useEffect(() => {
     if (isRevealed) {
@@ -123,7 +127,7 @@ export default function TarotCardComponent({
 
           {!isRevealed && (
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-2 py-1 bg-amber-400/20 rounded text-[10px] text-amber-200/80 whitespace-nowrap">
-              点击翻开
+              {messages.card.clickToReveal}
             </div>
           )}
         </div>
@@ -149,7 +153,7 @@ export default function TarotCardComponent({
                  background: card.type === 'major' ? 'rgba(168, 85, 247, 0.3)' : 'rgba(34, 197, 94, 0.3)',
                  color: card.type === 'major' ? '#e9d5ff' : '#bbf7d0'
                }}>
-            {card.type === 'major' ? '大阿卡纳' : card.suit === 'wands' ? '权杖' : card.suit === 'cups' ? '圣杯' : card.suit === 'swords' ? '宝剑' : '钱币'}
+            {getArcanaLabel(card, locale)}
           </div>
 
           <div className={`flex flex-col items-center justify-center h-full p-3 ${isReversed ? 'rotate-180' : ''}`}>
@@ -162,12 +166,11 @@ export default function TarotCardComponent({
             </div>
             
             <div className="text-center">
-              <div className="text-sm md:text-base font-bold text-amber-200 mb-1">{card.name}</div>
-              <div className="text-[10px] md:text-xs text-purple-300/70">{card.nameEn}</div>
+              <div className="text-sm md:text-base font-bold text-amber-200 mb-1">{localizedCard.name}</div>
             </div>
 
             <div className="mt-2 flex flex-wrap gap-1 justify-center">
-              {card.keywords.slice(0, 2).map((keyword, i) => (
+              {localizedCard.keywords.slice(0, 2).map((keyword, i) => (
                 <span key={i} className="px-1.5 py-0.5 text-[8px] md:text-[10px] rounded bg-amber-400/10 text-amber-200/80">
                   {keyword}
                 </span>

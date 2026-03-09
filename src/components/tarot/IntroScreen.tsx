@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Moon, Sun, Star, Heart, Sparkles, Wand2, ArrowRight, Layers, Layout, BookOpen } from '@/lib/icons';
+import { useTarotI18n } from '@/i18n/provider';
 
 interface IntroScreenProps {
   onStart: () => void;
@@ -73,6 +74,7 @@ const bigStarPositions = [
 ];
 
 export default function IntroScreen({ onStart }: IntroScreenProps) {
+  const { messages } = useTarotI18n();
   const [isVisible, setIsVisible] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
@@ -155,23 +157,23 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
         <div className={`transition-all duration-700 delay-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4">
             <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 bg-clip-text text-transparent">
-              神秘塔罗
+              {messages.app.title}
             </span>
           </h1>
           <p className="text-base md:text-lg lg:text-xl text-purple-300/80 mb-1 md:mb-2">
-            探索命运的奥秘
+            {messages.intro.tagline}
           </p>
           <p className="text-xs md:text-sm text-purple-400/50 max-w-md mx-auto mb-6 md:mb-8 px-4">
-            塔罗牌是古老的占卜工具，通过78张牌揭示内心深处的智慧与指引。
+            {messages.intro.details}
           </p>
         </div>
 
         {/* 功能介绍 */}
         <div className={`grid grid-cols-3 gap-2 md:gap-4 max-w-lg mx-auto mb-6 md:mb-10 transition-all duration-700 delay-700 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           {[
-            { icon: Layers, text: '78张完整牌组' },
-            { icon: Layout, text: '多种经典牌阵' },
-            { icon: BookOpen, text: '专业解读' }
+            { icon: Layers, text: messages.intro.features[0] },
+            { icon: Layout, text: messages.intro.features[1] },
+            { icon: BookOpen, text: messages.intro.features[2] }
           ].map((item, i) => {
             const IconComponent = item.icon;
             return (
@@ -191,7 +193,7 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
           >
             <span className="relative z-10 flex items-center gap-2 md:gap-3">
               <Wand2 className="w-4 h-4 md:w-5 md:h-5" />
-              开始占卜
+              {messages.intro.start}
               <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
             </span>
             
@@ -204,7 +206,7 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
 
         {/* 版权信息 */}
         <div className={`mt-8 md:mt-12 text-xs text-purple-400/30 transition-all duration-700 delay-1000 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-          <p>仅供娱乐参考 · 请理性对待占卜结果</p>
+          <p>{messages.intro.disclaimer}</p>
         </div>
       </div>
 
